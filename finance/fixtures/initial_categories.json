@@ -1,0 +1,98 @@
+[
+  {
+    "model": "finance.category",
+    "pk": 1,
+    "fields": {
+      "name": "Salary",
+      "category_type": "INCOME",
+      "description": "Regular employment income",
+      "color": "#28a745",
+      "is_active": true,
+      "created_at": "2024-10-12T10:00:00Z"
+    }
+  },
+  {
+    "model": "finance.category",
+    "pk": 2,
+    "fields": {
+      "name": "Freelance",
+      "category_type": "INCOME",
+      "description": "Freelance work income",
+      "color": "#17a2b8",
+      "is_active": true,
+      "created_at": "2024-10-12T10:01:00Z"
+    }
+  },
+  {
+    "model": "finance.category",
+    "pk": 3,
+    "fields": {
+      "name": "Groceries",
+      "category_type": "EXPENSE",
+      "description": "Food and household items",
+      "color": "#ffc107",
+      "is_active": true,
+      "created_at": "2024-10-12T10:02:00Z"
+    }
+  },
+  {
+    "model": "finance.category",
+    "pk": 4,
+    "fields": {
+      "name": "Transportation",
+      "category_type": "EXPENSE",
+      "description": "Gas, public transport, car maintenance",
+      "color": "#fd7e14",
+      "is_active": true,
+      "created_at": "2024-10-12T10:03:00Z"
+    }
+  },
+  {
+    "model": "finance.category",
+    "pk": 5,
+    "fields": {
+      "name": "Utilities",
+      "category_type": "EXPENSE",
+      "description": "Electricity, water, internet, phone",
+      "color": "#dc3545",
+      "is_active": true,
+      "created_at": "2024-10-12T10:04:00Z"
+    }
+  },
+  {
+    "model": "finance.category",
+    "pk": 6,
+    "fields": {
+      "name": "Entertainment",
+      "category_type": "EXPENSE",
+      "description": "Movies, games, hobbies",
+      "color": "#6f42c1",
+      "is_active": true,
+      "created_at": "2024-10-12T10:05:00Z"
+    }
+  },
+  {
+    "model": "finance.category",
+    "pk": 7,
+    "fields": {
+      "name": "Healthcare",
+      "category_type": "EXPENSE",
+      "description": "Medical expenses, insurance",
+      "color": "#e83e8c",
+      "is_active": true,
+      "created_at": "2024-10-12T10:06:00Z"
+    }
+  },
+  {
+    "model": "finance.category",
+    "pk": 8,
+    "fields": {
+      "name": "Rent",
+      "category_type": "EXPENSE",
+      "description": "Monthly rent payment",
+      "color": "#6610f2",
+      "is_active": true,
+      "created_at": "2024-10-12T10:07:00Z"
+    }
+  }
+]
