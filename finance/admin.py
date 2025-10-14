@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, Category, Transaction, Budget
+from .models import Account, Category, Transaction, Budget, BudgetData, BudgetSummary
 
 
 @admin.register(Account)
@@ -104,7 +104,85 @@ class BudgetAdmin(admin.ModelAdmin):
     get_remaining.short_description = 'Remaining'
 
 
+@admin.register(BudgetData)
+class BudgetDataAdmin(admin.ModelAdmin):
+    list_display = [
+        'fiscal_year', 'budget_category', 'budget_item', 'budget_amount', 
+        'department', 'sheet_source', 'processed_date', 'created_at'
+    ]
+    list_filter = [
+        'fiscal_year', 'budget_category', 'department', 'sheet_source', 'processed_date'
+    ]
+    search_fields = [
+        'budget_category', 'budget_item', 'budget_description', 'department', 'account_code'
+    ]
+    date_hierarchy = 'processed_date'
+    readonly_fields = ['created_at', 'updated_at']
+    
+    fieldsets = (
+        ('Budget Information', {
+            'fields': (
+                'sheet_source', 'fiscal_year', 'processed_date', 
+                'budget_category', 'budget_item', 'budget_amount'
+            )
+        }),
+        ('Details', {
+            'fields': ('budget_description', 'department', 'account_code')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    # Add filters for better navigation
+    list_per_page = 50
+    
+    def get_queryset(self, request):
+        """Optimize queries"""
+        return super().get_queryset(request).order_by('-fiscal_year', 'budget_category', 'budget_item')
+
+
+@admin.register(BudgetSummary)
+class BudgetSummaryAdmin(admin.ModelAdmin):
+    list_display = [
+        'fiscal_year', 'sheet_name', 'total_records', 'total_budget_amount', 
+        'processing_date', 'created_at'
+    ]
+    list_filter = ['fiscal_year', 'sheet_name', 'processing_date']
+    search_fields = ['sheet_name']
+    date_hierarchy = 'processing_date'
+    readonly_fields = ['created_at']
+    
+    fieldsets = (
+        ('Summary Information', {
+            'fields': ('sheet_name', 'fiscal_year', 'processing_date')
+        }),
+        ('Statistics', {
+            'fields': (
+                'total_records', 'total_budget_amount', 
+                'max_budget_item', 'min_budget_item', 'average_budget_item'
+            )
+        }),
+        ('Timestamps', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    # Add custom display methods
+    def get_total_budget_display(self, obj):
+        """Format total budget amount"""
+        return f"${obj.total_budget_amount:,.2f}"
+    get_total_budget_display.short_description = 'Total Budget'
+    
+    def get_records_display(self, obj):
+        """Display record count"""
+        return f"{obj.total_records:,} records"
+    get_records_display.short_description = 'Records'
+
+
 # Customize admin site headers
-admin.site.site_header = "Financial Management Admin"
-admin.site.site_title = "Finance Admin"
-admin.site.index_title = "Welcome to Financial Management System"
+admin.site.site_header = "Budget Management Admin"
+admin.site.site_title = "Budget Admin"
+admin.site.index_title = "Welcome to Budget Management System"

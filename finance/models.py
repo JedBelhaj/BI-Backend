@@ -3,6 +3,63 @@ from django.core.validators import MinValueValidator
 from decimal import Decimal
 
 
+class BudgetData(models.Model):
+    """Main budget data table matching the PostgreSQL schema"""
+    
+    sheet_source = models.CharField(max_length=255, help_text="Source of the budget data (Excel sheet, etc.)")
+    fiscal_year = models.IntegerField(help_text="Fiscal year for this budget item")
+    processed_date = models.DateField(help_text="Date when this data was processed")
+    budget_category = models.CharField(max_length=255, help_text="Main budget category")
+    budget_item = models.CharField(max_length=255, help_text="Specific budget item")
+    budget_amount = models.DecimalField(max_digits=15, decimal_places=2, help_text="Budget amount")
+    budget_description = models.TextField(blank=True, help_text="Detailed description of the budget item")
+    department = models.CharField(max_length=255, blank=True, help_text="Department responsible for this budget")
+    account_code = models.CharField(max_length=100, blank=True, help_text="Internal account code")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-fiscal_year', 'budget_category', 'budget_item']
+        verbose_name = "Budget Data"
+        verbose_name_plural = "Budget Data"
+        indexes = [
+            models.Index(fields=['fiscal_year']),
+            models.Index(fields=['budget_category']),
+            models.Index(fields=['department']),
+            models.Index(fields=['processed_date']),
+        ]
+
+    def __str__(self):
+        return f"{self.budget_category} - {self.budget_item} ({self.fiscal_year})"
+
+
+class BudgetSummary(models.Model):
+    """Budget summary table for aggregated statistics"""
+    
+    sheet_name = models.CharField(max_length=255, help_text="Name of the source sheet")
+    fiscal_year = models.IntegerField(help_text="Fiscal year for this summary")
+    total_records = models.IntegerField(help_text="Total number of budget records processed")
+    total_budget_amount = models.DecimalField(max_digits=15, decimal_places=2, help_text="Total budget amount")
+    max_budget_item = models.DecimalField(max_digits=15, decimal_places=2, help_text="Maximum budget item amount")
+    min_budget_item = models.DecimalField(max_digits=15, decimal_places=2, help_text="Minimum budget item amount")
+    average_budget_item = models.DecimalField(max_digits=15, decimal_places=2, help_text="Average budget item amount")
+    processing_date = models.DateTimeField(help_text="When this summary was generated")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-fiscal_year', '-processing_date']
+        verbose_name = "Budget Summary"
+        verbose_name_plural = "Budget Summaries"
+        unique_together = ['sheet_name', 'fiscal_year']
+        indexes = [
+            models.Index(fields=['fiscal_year']),
+            models.Index(fields=['processing_date']),
+        ]
+
+    def __str__(self):
+        return f"{self.sheet_name} Summary - FY{self.fiscal_year} ({self.total_records} records)"
+
+
 class Account(models.Model):
     """Represents a financial account (e.g., Bank Account, Credit Card, Cash)"""
     ACCOUNT_TYPES = [

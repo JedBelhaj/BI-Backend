@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Account, Category, Transaction, Budget
+from .models import Account, Category, Transaction, Budget, BudgetData, BudgetSummary
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -77,6 +77,51 @@ class BudgetSerializer(serializers.ModelSerializer):
             if data['end_date'] < data['start_date']:
                 raise serializers.ValidationError("End date must be after start date.")
         return data
+
+
+class BudgetDataSerializer(serializers.ModelSerializer):
+    """Serializer for the new budget data schema"""
+    
+    class Meta:
+        model = BudgetData
+        fields = [
+            'id', 'sheet_source', 'fiscal_year', 'processed_date', 
+            'budget_category', 'budget_item', 'budget_amount', 
+            'budget_description', 'department', 'account_code', 
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['created_at', 'updated_at']
+
+    def validate_fiscal_year(self, value):
+        """Ensure fiscal year is reasonable"""
+        if value < 1900 or value > 2100:
+            raise serializers.ValidationError("Fiscal year must be between 1900 and 2100.")
+        return value
+
+    def validate_budget_amount(self, value):
+        """Ensure budget amount is not negative"""
+        if value < 0:
+            raise serializers.ValidationError("Budget amount cannot be negative.")
+        return value
+
+
+class BudgetSummarySerializer(serializers.ModelSerializer):
+    """Serializer for budget summary statistics"""
+    
+    class Meta:
+        model = BudgetSummary
+        fields = [
+            'id', 'sheet_name', 'fiscal_year', 'total_records', 
+            'total_budget_amount', 'max_budget_item', 'min_budget_item', 
+            'average_budget_item', 'processing_date', 'created_at'
+        ]
+        read_only_fields = ['created_at']
+
+    def validate_total_records(self, value):
+        """Ensure total records is not negative"""
+        if value < 0:
+            raise serializers.ValidationError("Total records cannot be negative.")
+        return value
 
 
 class TransactionSummarySerializer(serializers.Serializer):
